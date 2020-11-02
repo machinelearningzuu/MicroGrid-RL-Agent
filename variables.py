@@ -31,13 +31,22 @@ Eb_path = 'Data/visualization/E battery effiency.png'
 data_columns = ['Month','Day','Hour','PV_component','Demand']
 
 #Solar DNN estimator
-solar_dnn_csv = 'Data/files/solar_forecasting.csv'
-solar_dnn_cols = ['Wind Speed (m/s)','Plane of Array Irradiance (W/m^2)','Cell Temperature (C)','AC System Output (W)']
+feature_set = 3
+solar_dnn_csv = 'Data/files/solar_dnn.csv'
+
+if feature_set == 1:
+    solar_dnn_cols = ['Wind Speed (m/s)','Plane of Array Irradiance (W/m^2)','Ambient Temperature (C)','AC System Output (W)']
+if feature_set == 2:
+    solar_dnn_cols = ['Plane of Array Irradiance (W/m^2)','Ambient Temperature (C)','AC System Output (W)']
+if feature_set == 3:
+    solar_dnn_cols = ['Beam Irradiance (W/m^2)','Diffuse Irradiance (W/m^2)','Cell Temperature (C)','AC System Output (W)']
 dim1 = 32
 dim2 = 1
 batch_size = 64
 validation_split = 0.2
 verbose=1
 epochs = 100
+plot_samples = 100
 solar_weights = 'Data/weights/solar_model.h5'
-loss_img = 'Data/visualization/solar_loss.png'
+loss_img = 'Data/visualization/solar_loss_set{}.png'
+pred_img = 'Data/visualization/solar_pred_set{}.png'

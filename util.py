@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 from variables import*
-
+np.random.seed(42)
 def preprocess_data():
     demand_data = pd.read_csv(demand_csv_path)
     solar_data = pd.read_csv(data_csv_path)

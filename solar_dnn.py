@@ -4,15 +4,16 @@ from variables import*
 from util import*
 import matplotlib.pyplot as plt
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-import tensorflow as tf
 
+import tensorflow as tf
 if tf.config.list_physical_devices('GPU'):
     physical_devices = tf.config.list_physical_devices('GPU')
     tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
-from tensorflow.keras.models import load_model
-from tensorflow.keras import Model
+from tensorflow.keras.models import load_model, Model
 from tensorflow.keras.layers import Input, Dense
+from tensorflow.keras import backend as K 
+np.random.seed(42)
 
 import logging
 logging.getLogger('tensorflow').disabled = True 
@@ -38,11 +39,14 @@ class SolarDNN(object):
 
         self.model = model
 
+    @staticmethod
+    def rmse(y_true, y_pred):
+        return K.sqrt(K.mean(K.square(y_pred - y_true))) 
+
     def train_model(self):
         self.model.compile(
                 loss='mse',
                 optimizer='adam')
-                # optimizer='sgd')
 
         self.history = self.model.fit(
                                     self.X,
@@ -57,27 +61,48 @@ class SolarDNN(object):
         self.model.save(solar_weights)
 
     def load_model(self, weight_path=None):
-
+        K.clear_session()
         loaded_model = load_model(solar_weights)
 
         loaded_model.compile(
-                loss='mse',
+                loss=SolarDNN.rmse,
                 optimizer='adam')
-                # optimizer=SGD(lr=lr, momentum=mom))
         self.model = loaded_model
+
+    def prediction(self):
+        return self.model.predict(self.X).squeeze()
     
     def plot_metrics(self):
         loss_train = self.history.history['loss']
         loss_val = self.history.history['val_loss']
 
-        plt.plot(np.arange(1,epochs+1), loss_train, 'r', label='Training loss')
-        plt.plot(np.arange(1,epochs+1), loss_val, 'b', label='validation loss')
-        plt.title('Training and Validation loss of Solar Power Model')
+        plt.plot(loss_train, 'r', label='Training loss')
+        plt.plot(loss_val, 'b', label='validation loss')
+        plt.title('Training vs Validation RMSE of Feature Set {}'.format(feature_set))
         plt.xlabel('Epochs')
-        plt.ylabel('Loss')
-        plt.savefig(loss_img)
+        plt.ylabel('RMSE')
+        plt.savefig(loss_img.format(feature_set))
         plt.legend()
         plt.show()
+
+        Ypred = self.prediction()
+        Ytrue = self.Y
+        idxs = np.random.randint(len(Ypred), size=plot_samples)
+        Ypred = Ypred[idxs]
+        Ytrue = Ytrue[idxs]  
+
+        # plt.scatter(np.arange(1, plot_samples+1), Ypred, c='r', label='Predictions')
+        # plt.scatter(np.arange(1, plot_samples+1), Ytrue, c='b', label='Ground Truth')
+        plt.plot(Ypred, 'r', label='Predictions')
+        plt.plot(Ytrue, 'b', label='Ground Truth')
+        plt.title('Predictions vs Ground Truth of Feature Set {}'.format(feature_set))
+        plt.xlabel('Epochs')
+        plt.ylabel('Value')
+        plt.savefig(pred_img.format(feature_set))
+        plt.legend()
+
+        plt.show()
+
 
     def run(self):
         if os.path.exists(solar_weights):
@@ -88,7 +113,8 @@ class SolarDNN(object):
             self.regressor()
             self.train_model()
             self.plot_metrics()
-            self.save_model()
+            # self.save_model()
+        self.prediction()
 
 if __name__ == "__main__":
     model = SolarDNN()
