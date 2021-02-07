@@ -4,6 +4,12 @@ Main Idea behind the project is develop a method for minimize electric grid cons
 
 # Project Overview
 
+### Details of Main Agent
+![Details of Main Agent](https://github.com/1zuu/MicroGrid-RL-Agent/blob/main/WhatsApp%20Image%202021-02-06%20at%2018.18.32.jpeg)
+
+### Details of Power Shiftable Agents
+![Details of Power Shiftable Agents](https://github.com/1zuu/MicroGrid-RL-Agent/blob/main/WhatsApp%20Image%202021-02-06%20at%2018.19.09.jpeg)
+
 There are 3 power sources MicroGrid, SolarPower, battery used for this project. Microgrid is the main power source,  main network for delivering 
 electricity from producers to consumers simply which we pay for what we use. Solar power is the intermedant source because its weather dependent. 
 then finally rechargeable battery which can be recharge using solar power.Objective is to balance the power consumtion of these 3 sources while 
